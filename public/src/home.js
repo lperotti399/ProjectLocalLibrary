@@ -1,14 +1,68 @@
-function getTotalBooksCount(books) {}
+function getTotalBooksCount(books) {
+  return books.length
+  
+}
 
-function getTotalAccountsCount(accounts) {}
+function getTotalAccountsCount(accounts) {
+  return accounts.length
+}
 
-function getBooksBorrowedCount(books) {}
+function getBooksBorrowedCount(books) {
+let output = []
 
-function getMostCommonGenres(books) {}
+for(let i =0; i<books.length; i++) {
+    for(let j=0; j<books[i].borrows.length; j++) {
+        if(books[i].borrows[j].returned === false) {
+            output.push(books[i].borrows[j].id)
+        }
+    }
+}
+return output.length
+}
 
-function getMostPopularBooks(books) {}
+function getMostCommonGenres(books) {
+    let obj = {}
+  books.forEach((book) => {
+    if(obj[book.genre]){
+      obj[book.genre]++;
+    } else {
+      obj[book.genre] = 1
+    }
+  });
+  let genreCount = [];
+  for(let [key, value] of Object.entries(obj)) {
+    genreCount.push({
+      'name' : key,
+      'count' : value
+    });
+  }
+  genreCount.sort((a,b) => b.count - a.count);
+  return genreCount.slice(0,5);
+  }
 
-function getMostPopularAuthors(books, authors) {}
+
+function getMostPopularBooks(books) {
+  return books.map((book) => {
+    return {name:  book.title, count: book.borrows.length}
+  }).sort((a,b) => (a.count < b.count ? 1: -1)).slice(0,5)
+}
+
+function getMostPopularAuthors(books, authors) {
+  function getAuthorById(authors, authorId) {
+    return authors.find((author) => author.id === authorId); }
+    const bookAuthors = [];
+    books.forEach((book) => {
+      const match = bookAuthors.find((author) => author.id === book.authorId);
+      if(match) {match.count += book.borrows.length;}
+      else {
+        const writer = getAuthorById(authors, book.authorId);
+        const count = book.borrows.length;
+        bookAuthors.push({name: `${writer.name.first} ${writer.name.last}`, count,}); }}) 
+      let result = bookAuthors.sort((authorA, authorB) =>
+                                   authorA.count < authorB.count ? 1 : -1);
+      result = result.slice(0,5);
+      return result; 
+}
 
 module.exports = {
   getTotalBooksCount,
